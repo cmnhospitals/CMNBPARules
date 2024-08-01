@@ -66,7 +66,7 @@
     "Name": "[Performance] Reduce usage of calculated columns that use the RELATED function",
     "Category": "Performance",
     "Description": "Calculated columns do not compress as well as data columns and may cause longer processing times. As such, calculated columns should be avoided if possible. One scenario where they may be easier to avoid is if they use the RELATED function.\r\nReference: https://www.sqlbi.com/articles/storage-differences-between-calculated-columns-and-calculated-tables/",
-    "Severity": 3,
+    "Severity": 2,
     "Scope": "CalculatedColumn",
     "Expression": "RegEx.IsMatch(Expression,\"(?i)RELATED\\s*\\(\")",
     "CompatibilityLevel": 1200
