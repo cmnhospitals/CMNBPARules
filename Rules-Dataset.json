@@ -617,7 +617,7 @@
     "Description": "Visible measures should have their format string property assigned",
     "Severity": 3,
     "Scope": "Measure",
-    "Expression": "not IsHidden \r\nand not Table.IsHidden \r\nand string.IsNullOrWhitespace(FormatString)",
+    "Expression": "not IsHidden\r\nand not Table.IsHidden\r\nand string.IsNullOrWhitespace(FormatString)\r\nand DataType <> \"String\"",
     "CompatibilityLevel": 1200
   },
   {
@@ -647,7 +647,7 @@
     "Category": "Formatting",
     "Severity": 3,
     "Scope": "Measure",
-    "Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,0\" or FormatString = \"#,0.0\")",
+	"Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,0\" or FormatString = \"#,0.0\") and DataType = \"Int64\"",
     "FixExpression": "FormatString = \"#,0\"",
     "CompatibilityLevel": 1200
   },
