@@ -606,10 +606,10 @@
     "Description": "Columns of type \"DateTime\" that have \"Month\" in their names should be formatted as \"MMMM yyyy\".",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "Name.IndexOf(\"Month\", \"OrdinalIgnoreCase\") >= 0 and DataType = \"DateTime\" and FormatString <> \"MMMM yyyy\"",
+    "Expression": "Name.IndexOf(\"Month\", \"OrdinalIgnoreCase\") >= 0 and DataType = \"DateTime\" and FormatString <> \"MMMM yyyy\" and not (Name.IndexOf(\"Start of\", \"OrdinalIgnoreCase\") >= 0 or Name.IndexOf(\"End of\", \"OrdinalIgnoreCase\") >= 0)",
     "FixExpression": "FormatString = \"MMMM yyyy\"",
     "CompatibilityLevel": 1200
-  },
+},
   {
     "ID": "PROVIDE_FORMAT_STRING_FOR_MEASURES",
     "Name": "[Formatting] Provide format string for measures",
