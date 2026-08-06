@@ -9,7 +9,8 @@
     "Expression": "DataType = \"Double\"\nand not (Name.ToLower() = \"latitude\" or Name.ToLower() = \"longitude\" or Name.ToLower() = \"lat\" or Name.ToLower() = \"long\")",
     "FixExpression": "DataType = DataType.Decimal",
     "CompatibilityLevel": 1200
-  },{
+  },
+  {
     "ID": "ISAVAILABLEINMDX_FALSE_NONATTRIBUTE_COLUMNS",
     "Name": "[Performance] Set IsAvailableInMdx to false on non-attribute columns",
     "Category": "Performance",
@@ -97,7 +98,7 @@
     "Description": "This rule looks for tables that contain the words 'date' or 'calendar' as they should likely be marked as a date table.\r\nReference: https://docs.microsoft.com/power-bi/transform-model/desktop-date-tables",
     "Severity": 3,
     "Scope": "Table, CalculatedTable",
-    "Expression": "(Name.ToUpper().Contains(\"DATE\") or Name.ToUpper().Contains(\"CALENDAR\"))\n\nand\n\n(\nDataCategory <> \"Time\"\n\nor\n\nColumns.Any(IsKey == true && DataType == \"DateTime\") == false\n)\n\nand\n\nColumns.Count > 2",
+    "Expression": "(RegEx.IsMatch(Name,\"(?i)\\\\b(date|dates|calendar|calendars)\\\\b\") or Name.StartsWith(\"DateTableTemplate_\") or Name.StartsWith(\"LocalDateTable_\"))\n\nand\n\n(\nDataCategory <> \"Time\"\n\nor\n\nColumns.Any(IsKey == true && DataType == \"DateTime\") == false\n)\n\nand\n\nColumns.Count > 2",
     "CompatibilityLevel": 1200
   },
   {
@@ -286,7 +287,7 @@
     "Description": "Use the DIVIDE  function instead of using \"/\". The DIVIDE function resolves divide-by-zero cases. As such, it is recommended to use to avoid errors.\r\n\r\nReference: https://docs.microsoft.com/power-bi/guidance/dax-divide-function-operator",
     "Severity": 3,
     "Scope": "Measure, CalculatedColumn, CalculationItem",
-    "Expression": "RegEx.IsMatch(Expression,\"\\]\\s*\\/(?!\\/)(?!\\*)\")\r\nor\r\nRegEx.IsMatch(Expression,\"\\)\\s*\\/(?!\\/)(?!\\*)\")",
+    "Expression": "(RegEx.IsMatch(Expression,\"\\]\\s*\\/(?!\\/)(?!\\*)\")\r\nor\r\nRegEx.IsMatch(Expression,\"\\)\\s*\\/(?!\\/)(?!\\*)\"))\r\nand not (current.Table.Name.StartsWith(\"DateTableTemplate_\") or current.Table.Name.StartsWith(\"LocalDateTable_\"))",
     "CompatibilityLevel": 1200
   },
   {
@@ -439,19 +440,19 @@
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
     "Expression": "IsAvailableInMDX = false\r\n\r\nand\r\n(\r\nUsedInSortBy.Any()\r\nor\r\nUsedInHierarchies.Any()\r\nor\r\nUsedInVariations.Any()\r\nor\r\nSortByColumn != null\r\n)",
-	"FixExpression": "IsAvailableInMDX = true",
+    "FixExpression": "IsAvailableInMDX = true",
     "CompatibilityLevel": 1200
   },
   {
-  "ID": "UNNECESSARY_COLUMNS",
-  "Name": "[Maintenance] Remove unnecessary columns",
-  "Category": "Maintenance",
-  "Description": "Hidden columns that are not referenced by any DAX expressions, relationships, hierarchy levels or Sort By-properties should be removed.",
-  "Severity": 3,
-  "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-  "Expression": "(IsHidden or Table.IsHidden)\n\nand ReferencedBy.Count = 0\n\nand (not UsedInRelationships.Any())\n\nand (not UsedInSortBy.Any())\n\nand (not UsedInHierarchies.Any())\n\nand (not Table.RowLevelSecurity.Any(\nit <> null and it.IndexOf(\"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n))\n\nand (not Model.Roles.Any(RowLevelSecurity.Any(\nit <> null and \n(\nit.IndexOf(current.Table.Name + \"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0 or\nit.IndexOf(\"'\" + current.Table.Name + \"'[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n)\n)))\n\nand not (\nObjectLevelSecurity.Any(it.ToString() == \"None\"))\n\nand not (\nTable.ObjectLevelSecurity.Any(it.ToString() == \"None\"))\n\nand current.ExtendedProperties.Count(Name == \"ParameterMetadata\") == 0",
-  "FixExpression": "Delete()",
-  "CompatibilityLevel": 1200
+    "ID": "UNNECESSARY_COLUMNS",
+    "Name": "[Maintenance] Remove unnecessary columns",
+    "Category": "Maintenance",
+    "Description": "Hidden columns that are not referenced by any DAX expressions, relationships, hierarchy levels or Sort By-properties should be removed.",
+    "Severity": 3,
+    "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
+    "Expression": "(IsHidden or Table.IsHidden)\n\nand ReferencedBy.Count = 0\n\nand (not UsedInRelationships.Any())\n\nand (not UsedInSortBy.Any())\n\nand (not UsedInHierarchies.Any())\n\nand (not Table.RowLevelSecurity.Any(\nit <> null and it.IndexOf(\"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n))\n\nand (not Model.Roles.Any(RowLevelSecurity.Any(\nit <> null and \n(\nit.IndexOf(current.Table.Name + \"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0 or\nit.IndexOf(\"'\" + current.Table.Name + \"'[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n)\n)))\n\nand not (\nObjectLevelSecurity.Any(it.ToString() == \"None\"))\n\nand not (\nTable.ObjectLevelSecurity.Any(it.ToString() == \"None\"))",
+    "FixExpression": "Delete()",
+    "CompatibilityLevel": 1200
   },
   {
     "ID": "UNNECESSARY_MEASURES",
@@ -592,10 +593,10 @@
     "ID": "DATECOLUMN_FORMATSTRING",
     "Name": "[Formatting] Provide format string for \"Date\" columns",
     "Category": "Formatting",
-    "Description": "Columns of type \"DateTime\" that contain \"Date\" in their names should be formatted using one of the approved format strings: \"m/d/yyyy\", \"mm/dd/yyyy\", \"mm/dd/yyyy hh:mm:ss\", or \"mm/dd/yyyy hh:mm AM/PM\". For display formatting beyond these options, use visual-level formatting in the report.",
+    "Description": "Columns of type \"DateTime\" that contain \"Date\" in their names should be formatted using one of the approved format strings: \"m/d/yyyy\", \"mm/dd/yyyy\", \"mm/dd/yyyy hh:mm:ss\", \"mm/dd/yyyy hh:mm AM/PM\", or \"Short Date\". For display formatting beyond these options, use visual-level formatting in the report.",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "Name.IndexOf(\"Date\", \"OrdinalIgnoreCase\") >= 0\r\nand\r\nDataType = \"DateTime\"\r\nand not (\r\nFormatString = \"m/d/yyyy\"\r\nor FormatString = \"mm/dd/yyyy\"\r\nor FormatString = \"mm/dd/yyyy hh:mm:ss\"\r\nor FormatString = \"mm/dd/yyyy hh:mm AM/PM\"\r\n)",
+    "Expression": "Name.IndexOf(\"Date\", \"OrdinalIgnoreCase\") >= 0\r\nand\r\nDataType = \"DateTime\"\r\nand not (\r\nFormatString = \"m/d/yyyy\"\r\nor FormatString = \"mm/dd/yyyy\"\r\nor FormatString = \"mm/dd/yyyy hh:mm:ss\"\r\nor FormatString = \"mm/dd/yyyy hh:mm AM/PM\"\r\nor FormatString = \"Short Date\"\r\n)",
     "FixExpression": "FormatString = \"m/d/yyyy\"",
     "CompatibilityLevel": 1200
   },
@@ -609,7 +610,7 @@
     "Expression": "Name.IndexOf(\"Month\", \"OrdinalIgnoreCase\") >= 0 and DataType = \"DateTime\" and FormatString <> \"MMMM yyyy\" and not (Name.IndexOf(\"Start of\", \"OrdinalIgnoreCase\") >= 0 or Name.IndexOf(\"End of\", \"OrdinalIgnoreCase\") >= 0)",
     "FixExpression": "FormatString = \"MMMM yyyy\"",
     "CompatibilityLevel": 1200
-},
+  },
   {
     "ID": "PROVIDE_FORMAT_STRING_FOR_MEASURES",
     "Name": "[Formatting] Provide format string for measures",
@@ -647,7 +648,7 @@
     "Category": "Formatting",
     "Severity": 3,
     "Scope": "Measure",
-	"Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,0\" or FormatString = \"#,0.0\") and DataType = \"Int64\"",
+    "Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,0\" or FormatString = \"#,0.0\") and DataType = \"Int64\"",
     "FixExpression": "FormatString = \"#,0\"",
     "CompatibilityLevel": 1200
   },
@@ -668,7 +669,7 @@
     "Description": "Add Data Category property for appropriate columns.\r\n\r\nReference: https://docs.microsoft.com/power-bi/transform-model/desktop-data-categorization",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "string.IsNullOrWhitespace(DataCategory)\r\nand\r\n(\r\n(\r\nName.ToLower().Contains(\"country\")\r\nor \r\n\nName.ToLower().Contains(\"continent\"\n)\r\nor\r\nName.ToLower().Contains(\"city\")\r\n)\r\nand DataType == \"String\"\r\n)\r\nor \r\n(\r\n(\nName.ToLower() == \"latitude\" \n or \nName.ToLower() == \"longitude\")\r\nand (DataType == DataType.Decimal or DataType == DataType.Double)\r\n)",
+    "Expression": "string.IsNullOrWhitespace(DataCategory)\r\nand\r\n(\r\n(\r\n(\r\nName.ToLower().Contains(\"country\")\r\nor \r\n\nName.ToLower().Contains(\"continent\"\n)\r\nor\r\nName.ToLower().Contains(\"city\")\r\n)\r\nand DataType == \"String\"\r\n)\r\nor \r\n(\r\n(\nName.ToLower() == \"latitude\" \n or \nName.ToLower() == \"longitude\")\r\nand (DataType == DataType.Decimal or DataType == DataType.Double)\r\n)\r\n)",
     "CompatibilityLevel": 1200
   },
   {
@@ -689,7 +690,7 @@
     "Description": "Set the 'Key' property to 'True' for primary key columns within the column properties.",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\ncurrent.Table.ObjectTypeName == \"Table (DirectQuery)\"",
+    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\nnot current.Table.Columns.Any(IsKey == true)",
     "FixExpression": "IsKey = true",
     "CompatibilityLevel": 1200
   },
