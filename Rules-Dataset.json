@@ -443,15 +443,15 @@
     "CompatibilityLevel": 1200
   },
   {
-    "ID": "UNNECESSARY_COLUMNS",
-    "Name": "[Maintenance] Remove unnecessary columns",
-    "Category": "Maintenance",
-    "Description": "Hidden columns that are not referenced by any DAX expressions, relationships, hierarchy levels or Sort By-properties should be removed.",
-    "Severity": 3,
-    "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "(IsHidden or Table.IsHidden)\n\n\r\nand ReferencedBy.Count = 0\r\n\n\nand (not UsedInRelationships.Any())\n\n\r\nand (not UsedInSortBy.Any())\n\n\r\nand (not UsedInHierarchies.Any())\n\n\r\nand (not Table.RowLevelSecurity.Any(\nit <> null and it.IndexOf(\"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n))\n\n and (not Model.Roles.Any(RowLevelSecurity.Any(\nit <> null and \n(\nit.IndexOf(current.Table.Name + \"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0 or\n it.IndexOf(\"'\" + current.Table.Name + \"'[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n )\n)))\r\nand not (\r\nObjectLevelSecurity.Any(it.ToString() == \"None\"))\r\nand not (\r\nTable.ObjectLevelSecurity.Any(it.ToString() == \"None\"))\r\nand not current.ExtendedProperties.Any(Name == \"ParameterMetadata\")",
-    "FixExpression": "Delete()",
-    "CompatibilityLevel": 1200
+  "ID": "UNNECESSARY_COLUMNS",
+  "Name": "[Maintenance] Remove unnecessary columns",
+  "Category": "Maintenance",
+  "Description": "Hidden columns that are not referenced by any DAX expressions, relationships, hierarchy levels or Sort By-properties should be removed.",
+  "Severity": 3,
+  "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
+  "Expression": "(IsHidden or Table.IsHidden)\n\nand ReferencedBy.Count = 0\n\nand (not UsedInRelationships.Any())\n\nand (not UsedInSortBy.Any())\n\nand (not UsedInHierarchies.Any())\n\nand (not Table.RowLevelSecurity.Any(\nit <> null and it.IndexOf(\"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n))\n\nand (not Model.Roles.Any(RowLevelSecurity.Any(\nit <> null and \n(\nit.IndexOf(current.Table.Name + \"[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0 or\nit.IndexOf(\"'\" + current.Table.Name + \"'[\" + current.Name + \"]\", \"OrdinalIgnoreCase\") >= 0\n)\n)))\n\nand not (\nObjectLevelSecurity.Any(it.ToString() == \"None\"))\n\nand not (\nTable.ObjectLevelSecurity.Any(it.ToString() == \"None\"))\n\nand current.ExtendedProperties.Count(Name == \"ParameterMetadata\") == 0",
+  "FixExpression": "Delete()",
+  "CompatibilityLevel": 1200
   },
   {
     "ID": "UNNECESSARY_MEASURES",
