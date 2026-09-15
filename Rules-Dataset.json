@@ -284,10 +284,10 @@
     "ID": "USE_THE_DIVIDE_FUNCTION_FOR_DIVISION",
     "Name": "[DAX Expressions] Use the DIVIDE function for division",
     "Category": "DAX Expressions",
-    "Description": "Use the DIVIDE  function instead of using \"/\". The DIVIDE function resolves divide-by-zero cases. As such, it is recommended to use to avoid errors.\r\n\r\nReference: https://docs.microsoft.com/power-bi/guidance/dax-divide-function-operator",
+    "Description": "Use the DIVIDE  function instead of using \"/\". The DIVIDE function resolves divide-by-zero cases. As such, it is recommended to use to avoid errors.\r\n\r\nNote: divisions by a numeric literal are excluded via the (?!\\s*\\d) lookahead, because a constant denominator can never be zero or blank - DIVIDE adds nothing there. This skips patterns such as (x) / 2, ^ (1 / 4) and FORMAT(x / 1000000, ...) while still catching any denominator that is a column, measure, variable or expression.\r\n\r\nReference: https://docs.microsoft.com/power-bi/guidance/dax-divide-function-operator",
     "Severity": 3,
     "Scope": "Measure, CalculatedColumn, CalculationItem",
-    "Expression": "(RegEx.IsMatch(Expression,\"\\]\\s*\\/(?!\\/)(?!\\*)\")\r\nor\r\nRegEx.IsMatch(Expression,\"\\)\\s*\\/(?!\\/)(?!\\*)\"))\r\nand not (current.Table.Name.StartsWith(\"DateTableTemplate_\") or current.Table.Name.StartsWith(\"LocalDateTable_\"))",
+    "Expression": "(RegEx.IsMatch(Expression,\"\\]\\s*\\/(?!\\/)(?!\\*)(?!\\s*\\d)\")\r\nor\r\nRegEx.IsMatch(Expression,\"\\)\\s*\\/(?!\\/)(?!\\*)(?!\\s*\\d)\"))\r\nand not (current.Table.Name.StartsWith(\"DateTableTemplate_\") or current.Table.Name.StartsWith(\"LocalDateTable_\"))",
     "CompatibilityLevel": 1200
   },
   {
