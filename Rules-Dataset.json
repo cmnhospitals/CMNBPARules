@@ -676,10 +676,10 @@
     "ID": "HIDE_FOREIGN_KEYS",
     "Name": "[Formatting] Hide foreign keys",
     "Category": "Formatting",
-    "Description": "Foreign keys should always be hidden.",
+    "Description": "Foreign keys should always be hidden. Note: the FromTable check is required - without it, UsedInRelationships also matches the 'to' side of any relationship whose columns share a name, causing primary keys to be reported as foreign keys.",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "UsedInRelationships.Any(FromColumn.Name == current.Name and FromCardinality == \"Many\")\n\r\nand\r\n\nIsHidden == false",
+    "Expression": "UsedInRelationships.Any(FromTable.Name == current.Table.Name and FromColumn.Name == current.Name and FromCardinality == \"Many\")\n\r\nand\r\n\nIsHidden == false",
     "FixExpression": "IsHidden = true",
     "CompatibilityLevel": 1200
   },
