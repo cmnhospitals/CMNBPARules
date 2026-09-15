@@ -687,10 +687,10 @@
     "ID": "MARK_PRIMARY_KEYS",
     "Name": "[Formatting] Mark primary keys",
     "Category": "Formatting",
-    "Description": "Set the 'Key' property to 'True' for primary key columns within the column properties.",
+    "Description": "Set the 'Key' property to 'True' for primary key columns within the column properties.\r\n\r\nNote: restricted to DirectQuery tables. IsKey can exist on an Import table (it is normally set when the table is created, or by 'Mark as date table'), but it cannot be WRITTEN to an Import table through the XMLA endpoint - the engine returns 'IsKey is only supported for DirectQuery tables'. That is the only path Tabular Editor and other external tools have to a running Power BI Desktop model, so on an Import model this rule's fix silently does nothing and the finding can never be cleared. Since CMN models are overwhelmingly Import, the rule is scoped to where it is actionable.",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\nnot current.Table.Columns.Any(IsKey == true)",
+    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\nnot current.Table.Columns.Any(IsKey == true)\r\nand\r\ncurrent.Table.ObjectTypeName == \"Table (DirectQuery)\"",
     "FixExpression": "IsKey = true",
     "CompatibilityLevel": 1200
   },
