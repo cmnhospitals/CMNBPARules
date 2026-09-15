@@ -687,10 +687,10 @@
     "ID": "MARK_PRIMARY_KEYS",
     "Name": "[Formatting] Mark primary keys",
     "Category": "Formatting",
-    "Description": "Set the 'Key' property to 'True' for primary key columns within the column properties. Note: restricted to DirectQuery tables - the engine rejects IsKey on Import tables ('IsKey is only supported for DirectQuery tables'), where key columns are managed automatically via the RowNumber column. Without that restriction this rule is unsatisfiable on Import models and its fix expression always fails.",
+    "Description": "Set the 'Key' property to 'True' for primary key columns within the column properties.",
     "Severity": 3,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\nnot current.Table.Columns.Any(IsKey == true)\r\nand\r\ncurrent.Table.ObjectTypeName == \"Table (DirectQuery)\"",
+    "Expression": "UsedInRelationships.Any(ToTable.Name == current.Table.Name and ToColumn.Name == current.Name and ToCardinality == \"One\")\r\n\nand\r\n\nIsKey == false\r\nand\r\ncurrent.Table.DataCategory != \"Time\"\r\nand\r\nnot current.Table.Columns.Any(IsKey == true)",
     "FixExpression": "IsKey = true",
     "CompatibilityLevel": 1200
   },
